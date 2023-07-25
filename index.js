@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const port = process.env.SERVER_PORT;
+const port = 3000;
 const path = require("path");
 
 const mongoose = require("mongoose");
@@ -9,11 +9,15 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const uri =
   "mongodb+srv://laibatanveer:2tAQWhHvYUVwz8Av@banoqabil.nrnpkvd.mongodb.net/?retryWrites=true&w=majority";
 
-const router = require("./API/Registration/Router");
+  const registrationRouter = require("./API/Registration/Router");
+  const productRouter = require("./API/Products/Router");
+  
+ 
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(router);
+app.use('/registration', registrationRouter);
+app.use('/products', productRouter);
 
 mongoose
   .connect(process.env.MONGO_URL)
