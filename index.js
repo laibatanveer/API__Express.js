@@ -11,6 +11,9 @@ const uri =
 
   const registrationRouter = require("./API/Registration/Router");
   const productRouter = require("./API/Products/Router");
+  const categoryRouter = require("./API/Category/Router");
+  const brandsRouter = require("./API/Brands/Router");
+
   
  
 const bodyParser = require("body-parser");
@@ -18,6 +21,9 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/registration', registrationRouter);
 app.use('/products', productRouter);
+app.use('/category', categoryRouter);
+app.use('/brands', brandsRouter);
+
 
 mongoose
   .connect(process.env.MONGO_URL)
