@@ -26,11 +26,6 @@ app.use('/category', categoryRouter);
 app.use('/brands', brandsRouter);
 
 
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "Pages", "register.html"));
-});
-
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
