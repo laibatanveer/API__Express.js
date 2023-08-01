@@ -16,7 +16,7 @@
 
 const express = require("express");
 const router = express.Router();
-const controller = require("./controller");
+const controller = require("./Controller");
 
 router.post("/createProduct", controller.createProduct);
 router.get("/productByBrand/:brand", controller.getProductByBrand);

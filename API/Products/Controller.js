@@ -30,7 +30,7 @@
 
 // module.exports = { allProducts, productByName, productsById };
 
-const Product = require('../models/product');
+const Product = require('./Model');
 
 const createProduct = async (req, res) => {
   const { name, price, category, brand, thumbnail, imageArray, description } = req.body;
