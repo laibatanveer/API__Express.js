@@ -1,55 +1,204 @@
-// require("dotenv").config();
-// // const { default: mongoose } = require('mongoose');
-// const user = require("./model");
-// const { connect } = require("mongoose");
+const User = require('./Model')
+const { connect } = require('mongoose')
+require('dotenv').config()
+const { hash, compare } = require('bcryptjs')
+const { sign } = require('jsonwebtoken')
 
-// const registerUser = async (req, res) => {
-//   const { fname, lname, email, psw } = req.body;
 
-//   try {
-//     await connect(process.env.MONGO_URL);
-//     console.log("DB connected");
+const Login = async (req, res) => {
+    const { Name, Email, Password } = req.body
 
-//     await user.create({ fname, lname, email, psw });
-//     res.json({
-//       success: true,
-//     });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
-// module.exports = registerUser;
+    if (!Email || !Password) {
+        res.status(403).json({
+            message: "Missing Required Field"
+        })
+    }
 
-require("dotenv").config();
-const bcrypt = require('bcrypt');
-const user = require("./model");
-const { connect } = require("mongoose");
+    else {
 
-// Connect to database once when your application starts.
-connect(process.env.MONGO_URI)
-  .then(() => console.log("DB connected"))
-  .catch((error) => console.error("DB connection error:", error));
+        try {
+            await connect(process.env.MONGO_URI)
+            const CheckUser = await User.findOne({ Email })
 
-const registerUser = async (req, res) => {
-  const { fname, lname, email, psw } = req.body;
+            if (!CheckUser) {
+                res.status(404).json({
+                    message: "User Doesn't Exist"
+                })
+            }
 
-  
+            else {
 
-  try {
-    const hashedPsw = await bcrypt.hash(psw, 10);  // hash the password
+                const decryptPassword = await compare(Password, CheckUser.Password)
 
-    await user.create({ fname, lname, email, psw: hashedPsw });
-    res.json({
-      success: true,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({   // Respond with an error status code and message.
-      success: false,
-      message: 'An error occurred during registration',
-    });
-  }
-};
+                if (Email == CheckUser.Email && decryptPassword) {
 
-module.exports = registerUser;
+                    const UserData = {
+                        Email: CheckUser.Email,
+                        _id: CheckUser._id,
+                        Role: CheckUser.Role,
+                        ProfilePic: CheckUser.ProfilePic,
+                        Joining: CheckUser.Joining
+                    }
 
+                    const token = sign(UserData, process.env.JWT_SECRET)
+
+                    res.json({
+                        message: "Successfully Logginned",
+                        token
+                    })
+                }
+
+                else {
+                    res.status(403).json({
+                        message: "Invalid Credentails"
+                    })
+                }
+            }
+
+        }
+
+        catch (error) {
+            res.json({
+                message: error.message
+            })
+        }
+    }
+}
+
+
+
+const Signup = async (req, res) => {
+
+    const { Name, Email, Password } = req.body
+
+    if (!Name || !Email || !Password) {
+        res.status(403).json({
+            message: "Missing Required Field"
+        })
+    }
+
+    else {
+
+        try {
+            await connect(process.env.MONGO_URI)
+
+            const CheckUser = await User.findOne({ Email })
+
+            if (CheckUser) {
+                res.json({
+                    message: "User Already Exist"
+                })
+            }
+
+            else {
+                await User.create({ Name, Email, Password: await hash(Password, 12) })
+                res.json({
+                    message: "Successfully Created"
+                })
+            }
+
+
+
+
+
+        }
+
+        catch (error) {
+            res.json({
+                message: error.message
+            })
+        }
+
+    }
+
+
+
+
+}
+
+
+const getAllUsers = async (req, res) => {
+
+    try {
+        await connect(process.env.MONGO_URI)
+        const users = await User.find()
+
+        res.json({ users })
+    }
+
+    catch (error) {
+        res.json({
+            message: error.message
+        })
+    }
+
+
+
+}
+
+const updateProfile = async (req, res) => {
+
+    const { _id, Email, Name, ProfilePic } = req.body
+
+    const filter = { _id };
+    const update = { Email, Name, ProfilePic };
+
+    try {
+        await connect(process.env.MONGO_URI)
+        const updated = await User.findOneAndUpdate(filter, update, {
+            new: true
+        })
+
+        res.json({
+            message: "successs",
+            user: updated
+        })
+    }
+
+    catch (error) {
+        res.json({
+            message: error.message
+        })
+    }
+
+}
+
+
+const userByID = async (req, res) => {
+
+    const { _id } = req.query
+
+
+    try {
+        await connect(process.env.MONGO_URI)
+        const user = await User.findOne({ _id })
+
+        res.json({ user })
+    }
+
+    catch (error) {
+        res.json({
+            message: error.message
+        })
+    }
+}
+
+const deleteUser = async (req, res) => {
+
+    const { _id } = req.body
+
+    try {
+        await connect(process.env.MONGO_URI)
+        await User.deleteOne({ _id })
+
+        res.json({ message: "User Deleted Successfully" })
+    }
+
+    catch (error) {
+        res.json({
+            message: error.message
+        })
+    }
+}
+
+module.exports = { Login, Signup, deleteUser, updateProfile, userByID, getAllUsers }

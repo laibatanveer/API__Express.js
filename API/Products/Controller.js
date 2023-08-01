@@ -1,96 +1,161 @@
-// const products = [
-//   { id: 1, name: "Product1" },
-//   { id: 2, name: "Product2" },
-//   { id: 3, name: "Product3" },
-//   { id: 4, name: "Product4" },
-//   { id: 5, name: "Product5" },
-//   { id: 6, name: "Product6" },
-//   { id: 7, name: "Product7" },
-//   { id: 8, name: "Product8" },
-//   { id: 9, name: "Product9" },
-//   { id: 10, name: "Product10" },
-// ];
+const Product = require('./Model')
+const { connect } = require('mongoose')
+require('dotenv').config()
+
+const getAllProducts = async(req, res) => {
+    try {
+        await connect(process.env.MONGO_URL)
+        const allProducts = await Product.find()
+        res.json({
+            Product: allProducts
+        })
+
+    }
 
 
-// const allProducts = (req, res) => {
-//   res.json(products);
-// };
-
-// const productsById = (req, res) => {
-//   const product = products.find(p => p.id === Number(req.params.id));
-//   if (!product) return res.status(404).send("Product not found.");
-//   res.json(product);
-// };
-
-// const productByName = (req, res) => {
-//   const product = products.find(p => p.name.toLowerCase() === req.params.name.toLowerCase());
-//   if (!product) return res.status(404).send("Product not found.");
-//   res.json(product);
-// };
-
-// module.exports = { allProducts, productByName, productsById };
-
-const Product = require('./Model');
-
-const createProduct = async (req, res) => {
-  const { name, price, category, brand, thumbnail, imageArray, description } = req.body;
-  const product = new Product({
-    name,
-    price,
-    category,
-    brand,
-    thumbnail,
-    imageArray,
-    description
-  });
-
-  await product.save();
-  res.status(201).json(product);
-};
-
-const getProductByBrand = async (req, res) => {
-  const products = await Product.find({ brand: req.params.brand });
-  res.json(products);
-};
-
-const getProductByCategory = async (req, res) => {
-  const products = await Product.find({ category: req.params.category });
-  res.json(products);
-};
-
-const updateProduct = async (req, res) => {
-  const { name, price, category, brand, thumbnail, imageArray, description } = req.body;
-  const product = await Product.findByIdAndUpdate(req.params.id, {
-    name,
-    price,
-    category,
-    brand,
-    thumbnail,
-    imageArray,
-    description
-  }, { new: true });
-
-  if (!product) {
-    return res.status(404).send('Product not found');
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
   }
+
+
+  const getProductById = async(req, res) => {
+    const { _id } = req.query
+
+
+    try {
+        await connect(process.env.MONGO_URL)
+        const Product = await Product.findOne({ _id })
+        res.json({ Product })
+    }
+
+
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+    }
+
+
+const getProductByName = async(req, res) => {
+    const { ProductName } = req.params
+
+
+    try {
+        await mongoose.connect(process.env.MONGO_URL)
+        const Product = await Product.findOne({  ProductName })
+        res.json({Product })
+
+    }
+
+    catch (error) {
+        res.json(
+            {
+                message: error.message
+            }
+        )
+
+    }
+    }
+
+const createProduct = async(req, res) => {
+    const { ProductName, ProductImage } = req.body
+
+    if (!ProductName || !ProductImage) {
+        res.status(403).json({
+            message: "Missing Required Field"
+        })
+    }
+
+    else {
+        try {
+            await connect (process.env.MONGO_URL)
+            const checkExisting = await Product.exists({ ProductName })
+
+            if (checkExisting) {
+                res.status(400).json({
+                    message: "Product Already Exists"
+                })
+            }
+
+            else {
+                await Product.create({ ProductName, ProductImage })
+                const allProducts = await Product.find()
+
+                res.json({
+                    message: "DB Connected",
+                    Product: allProducts
+                })
+
+            }
+      
   
-  res.json(product);
-};
+        } 
+        catch (error) {
+          res.status(400).json({
+              message: error.message
+          })
+      
+          
+      
+      
+        }
+    }
+    }
 
-const deleteProduct = async (req, res) => {
-  const product = await Product.findByIdAndRemove(req.params.id);
+const deleteProduct = async(req, res) => {
+    const { _id } = req.body
 
-  if (!product) {
-    return res.status(404).send('Product not found');
-  }
 
-  res.json({ message: 'Product deleted' });
-};
+    try {
+        await connect(process.env.MONGO_URL)
+        await Product.deleteOne({ _id })
+        const Product = await Product.find()
+        res.status(200).json({
+            message: "Deleted Successfully",
+            Product
+        })
+    }
 
-module.exports = {
-  createProduct,
-  getProductByBrand,
-  getProductByCategory,
-  updateProduct,
-  deleteProduct
-};
+
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+    }
+
+const updateProduct = async(req, res) => {
+    const { _id, ProductName, ProductImage } = req.body
+
+    const filter = { _id };
+    const update = { ProductName, ProductImage };
+
+    try {
+        await connect(process.env.MONGO_URL)
+
+        await Product.findOneAndUpdate(filter, update, {
+            new: true
+        });
+
+        const Product = await Product.find()
+
+        res.json({
+            message: "Successfully updated",
+            Product
+        })
+
+    }
+
+
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        })
+    }
+
+    }
+  module.exports = {getAllProducts, getProductById , getProductByName, createProduct, updateProduct, deleteProduct}

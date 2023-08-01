@@ -1,31 +1,35 @@
-const {Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose')
 
-const userSchema = new Schema({
-fname:{
-    type:String,
-    required: true
-}
-,
-lname:{
-    type:String,
-    required: true
-}
-,
-email:{
-    type:String,
-    required:true
-}
-,
-psw:{
-    type:String,
-    required: true
-}
-,
-joining:{
-    type:Date,
-    default:Date.now 
-}
-})
+const UserSchema = new Schema(
+    {
+        Name: {
+            type: String,
+            required: true
+        },
+        Email: {
+            type: String,
+            required: true,
+            unique: true
+        },
+        Password: {
+            type: String,
+            required: true
+        },
+        ProfilePic: {
+            type: String,
+            default: "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
+        },
+        Role: {
+            type: String,
+            default: "user"
+        },
+        Joining: {
+            type: Date,
+            default: Date.now
+        }
 
-const user = model("user", userSchema);
- module.exports =user
+    }
+)
+
+const User = model('user', UserSchema)
+module.exports = User
