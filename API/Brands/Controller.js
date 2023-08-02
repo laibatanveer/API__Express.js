@@ -72,7 +72,7 @@ const createBrand = async(req, res) => {
 
     else {
         try {
-            await connect (process.env.MONGO_URL)
+            await connect (process.env.MONGO_URI)
             const checkExisting = await Brand.exists({ BrandName })
 
             if (checkExisting) {
