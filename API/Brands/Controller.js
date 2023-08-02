@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const getAllBrands = async(req, res) => {
     try {
-        await connect(process.env.MONGO_URL)
+        await connect(process.env.MONGO_URI)
         const allBrands = await Brand.find()
         res.json({
             Brand: allBrands

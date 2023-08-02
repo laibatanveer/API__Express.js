@@ -45,7 +45,7 @@ const getProductByName = async(req, res) => {
 
 
     try {
-        await mongoose.connect(process.env.MONGO_URL)
+        await mongoose.connect(process.env.MONGO_URI)
         const Product = await Product.findOne({  ProductName })
         res.json({Product })
 
@@ -72,7 +72,7 @@ const createProduct = async(req, res) => {
 
     else {
         try {
-            await connect (process.env.MONGO_URL)
+            await connect (process.env.MONGO_URI)
             const checkExisting = await Product.exists({ ProductName })
 
             if (checkExisting) {
@@ -111,7 +111,7 @@ const deleteProduct = async(req, res) => {
 
 
     try {
-        await connect(process.env.MONGO_URL)
+        await connect(process.env.MONGO_URI)
         await Product.deleteOne({ _id })
         const Product = await Product.find()
         res.status(200).json({
@@ -135,7 +135,7 @@ const updateProduct = async(req, res) => {
     const update = { ProductName, ProductImage };
 
     try {
-        await connect(process.env.MONGO_URL)
+        await connect(process.env.MONGO_URI)
 
         await Product.findOneAndUpdate(filter, update, {
             new: true
