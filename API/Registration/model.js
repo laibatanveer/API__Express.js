@@ -2,16 +2,16 @@ const { Schema, model } = require('mongoose')
 
 const UserSchema = new Schema(
     {
-        Name: {
+        name: {
             type: String,
             required: true
         },
-        Email: {
+        email: {
             type: String,
             required: true,
             unique: true
         },
-        Password: {
+        password: {
             type: String,
             required: true
         },
@@ -19,7 +19,7 @@ const UserSchema = new Schema(
             type: String,
             default: "https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
         },
-        Role: {
+        role: {
             type: String,
             default: "user"
         },
