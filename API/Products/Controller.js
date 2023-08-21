@@ -17,10 +17,10 @@ const getAllProducts = async (req, res) => {
 };
 
 const getProductById = async (req, res) => {
-  const { id } = req.params;
+  const { _id } = req.params;
 
   try {
-    const foundProduct = await Product.findOne({ id });
+    const foundProduct = await Product.findOne({ _id });
     if(!foundProduct) {
       return res.status(404).json({ message: "Product not found" });
     }

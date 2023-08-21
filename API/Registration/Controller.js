@@ -1,68 +1,75 @@
-
 const User = require("./Model");
 const { connect } = require("mongoose");
+const mongoose = require('mongoose');
 require("dotenv").config();
 const { hash, compare } = require("bcryptjs");
 const { sign } = require("jsonwebtoken");
 
+
+
 // const Signup = async (req, res) => {
+//   await connect(process.env.MONGO_URI);
 //   const { username, email, password, role } = req.body;
 
+//   // Check for missing fields
 //   if (!username || !email || !password || !role) {
-//     return res.status(400).json({ message: "Missing Required Field" });
+//     return res
+//       .status(400)
+//       .send({ message: "Please fill all required fields." });
 //   }
 
 //   try {
-//     const CheckUser = await User.findOne({ email: email.toLowerCase() });
-
-//     if (CheckUser) {
-//       return res.status(409).json({ message: "User Already Exist" });
+//     // Check if the user already exists using email
+//     const existingUser = await User.findOne({ email: email.toLowerCase() });
+//     if (existingUser) {
+//       return res.status(400).send({ message: "email already exists." });
 //     }
 
+//     // Hash the password
 //     const hashedPassword = await hash(password, 12);
-//     await User.create({ username, email: email.toLowerCase(), password: hashedPassword });
 
-//     return res.status(201).json({ message: "Successfully Created" });
+//     // Create a new user
+//     await User.create({
+//       username,
+//       email: email.toLowerCase(),
+//       password: hashedPassword,
+//       role,
+//     });
+
+//     res.status(201).send({ message: "User registered successfully." });
 //   } catch (error) {
-//     console.error(error);
-    
-//     if (error.code === 11000) {
-//       return res.status(409).json({ message: "Email already exists" });
-//     }
-
-//     return res.status(500).json({ message: error.message });
+//     console.error("Error during signup:", error);
+//     res
+//       .status(500)
+//       .send({ message: "Internal server error.", error: error.message });
 //   }
 // };
 const Signup = async (req, res) => {
-  const { username, email, password, role } = req.body;
-
-  if (!username || !email || !password || !role) {
-    return res.status(400).json({ message: "Missing Required Field" });
-  }
-
+  const { username, password, email, role } = req.body;
   try {
-    const CheckUser = await User.findOne({ email: email.toLowerCase() });
+      await mongoose.connect(process.env.MONGO_URI)
+      console.log("DB Connected")
+      const existingUser = await User.exists({ email: email })
+      if (existingUser) {
+          res.status(208).json({
+              message: "User Already Exists"
+          })
+      }
 
-    if (CheckUser) {
-      return res.status(409).json({ message: "User Already Exist" });
-    }
-
-    const hashedPassword = await hash(password, 12);
-    await User.create({ username, email: email.toLowerCase(), password: hashedPassword });
-    return res.status(201).json({ message: "Successfully Created" });
-
-  } catch (error) {
-    console.error(error);
-    
-    // Handle MongoDB unique constraint error
-    if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
-      return res.status(409).json({ message: "Email already exists" });
-    }
-
-    return res.status(500).json({ message: "Internal Server Error" });
+      else {
+          await User.create({ username, email,role, password: await hash(password, 12) })
+          console.log("User Created")
+          res.status(201).json({
+              message: "Signup Successfully"
+          })
+      }
   }
-};
-
+  catch (error) {
+      res.json({
+          message: error.message
+      })
+  }
+}
 
 
 const Login = async (req, res) => {
@@ -83,7 +90,7 @@ const Login = async (req, res) => {
     const isValidPassword = await compare(password, CheckUser.password);
 
     // Log for debugging purposes.
-    console.log('Password check:', isValidPassword);
+    console.log("Password check:", isValidPassword);
 
     if (isValidPassword) {
       const UserData = {
@@ -97,7 +104,9 @@ const Login = async (req, res) => {
       if (!process.env.JWT_SECRET) {
         console.error("JWT_SECRET is not set.");
 
-        return res.status(500).json({ message: "Server error: JWT_SECRET is missing." });
+        return res
+          .status(500)
+          .json({ message: "Server error: JWT_SECRET is missing." });
       }
 
       const token = sign(UserData, process.env.JWT_SECRET);
@@ -105,8 +114,8 @@ const Login = async (req, res) => {
       return res.json({ message: "Successfully Logged in", token });
     } else {
       // This is where you're currently getting an error.
-      console.log('User entered password:', password); // Temporarily for debugging.
-      console.log('Stored hashed password:', CheckUser.password); // Temporarily for debugging.
+      console.log("User entered password:", password); // Temporarily for debugging.
+      console.log("Stored hashed password:", CheckUser.password); // Temporarily for debugging.
       return res.status(403).json({ message: "Invalid Credentials" });
     }
   } catch (error) {
@@ -180,7 +189,6 @@ const deleteUser = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   Login,
