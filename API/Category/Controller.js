@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const { connect } = require("mongoose");
+
 const Category = require("./Model");
 require("dotenv").config();
 
@@ -51,98 +53,77 @@ const createCategory = async (req, res) => {
   }
 };
 
-const getCategoryById = async(req, res) => {
-  const { _id } = req.query
-
-
-  try {
-      await connect(process.env.MONGO_URL)
-      const category = await Category.findOne({ _id })
-      res.json({ category })
-  }
-
-
-  catch (error) {
-      res.status(400).json({
-          message: error.message
-      })
-  }
-  }
-
-
-const getCategoryByName = async(req, res) => {
-  const { CategoryName } = req.params
-
+const getCategoryById = async (req, res) => {
+  const { _id } = req.query;
 
   try {
-      await mongoose.connect(process.env.MONGO_URL)
-      const category = await category.findOne({  CategoryName })
-      res.json({category })
-
+    await connect(process.env.MONGO_URI);
+    const category = await Category.findOne({ _id });
+    res.json({ category });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
   }
+};
 
-  catch (error) {
-      res.json(
-          {
-              message: error.message
-          }
-      )
+const getCategoryByName = async (req, res) => {
+  const { CategoryName } = req.params;
 
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    const category = await category.findOne({ CategoryName });
+    res.json({ category });
+  } catch (error) {
+    res.json({
+      message: error.message,
+    });
   }
+};
+const deleteCategory = async (req, res) => {
+  const { _id } = req.body;
+
+  try {
+    await connect(process.env.MONGO_URI);
+
+    await Category.deleteOne({ _id });
+    const category = await Category.find();
+    res.status(200).json({
+      message: "Deleted Successfully",
+      category,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
   }
-  const deleteCategory = async(req, res) => {
-    const { _id } = req.body
+};
 
+const updateCategory = async (req, res) => {
+  const { _id, CategoryName, CategoryImage } = req.body;
 
-    try {
-        await connect(process.env.MONGO_URL)
-        await Category.deleteOne({ _id })
-        const category = await Category.find()
-        res.status(200).json({
-            message: "Deleted Successfully",
-            category
-        })
-    }
+  const filter = { _id };
+  const update = { CategoryName, CategoryImage };
 
+  try {
+    await connect(process.env.MONGO_URI);
 
-    catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
-    }
-    }
+    await Category.findOneAndUpdate(filter, update, {
+      new: true,
+    });
 
-const updateCategory = async(req, res) => {
-    const { _id, CategoryName, CategoryImage } = req.body
+    const category = await Category.find();
 
-    const filter = { _id };
-    const update = { CategoryName, CategoryImage };
-
-    try {
-        await connect(process.env.MONGO_URL)
-
-        await Category.findOneAndUpdate(filter, update, {
-            new: true
-        });
-
-        const category = await Category.find()
-
-        res.json({
-            message: "Successfully updated",
-            category
-        })
-
-    }
-
-
-    catch (error) {
-        res.status(400).json({
-            message: error.message
-        })
-    }
-
-    }
-
+    res.json({
+      message: "Successfully updated",
+      category,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   getAllCategories,

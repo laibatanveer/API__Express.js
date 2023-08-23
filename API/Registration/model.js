@@ -9,8 +9,7 @@ const UserSchema = new Schema(
         email: {
             type: String,
             required: true,
-            unique: true,
-            sparse:true
+            unique: true
         },
         password: {
             type: String,
@@ -22,6 +21,7 @@ const UserSchema = new Schema(
         },
         role: {
             type: String,
+            required: true,
             default: "user"
         },
         Joining: {

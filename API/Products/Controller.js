@@ -21,7 +21,7 @@ const getProductById = async (req, res) => {
 
   try {
     const foundProduct = await Product.findOne({ _id });
-    if(!foundProduct) {
+    if (!foundProduct) {
       return res.status(404).json({ message: "Product not found" });
     }
     res.json({ foundProduct });
@@ -72,12 +72,10 @@ const getProductsByCategory = async (req, res) => {
   }
 };
 
-
-
 const createProduct = async (req, res) => {
-  const { ProductName, ProductImage, brand, category } = req.body;
+  const { ProductName, ProductImage, brand, category, price } = req.body;
 
-  if (!ProductName || !ProductImage || !brand || !category) {
+  if (!ProductName || !ProductImage || !brand || !category || !price) {
     return res.status(403).json({
       message: "Missing Required Field",
     });
@@ -85,6 +83,8 @@ const createProduct = async (req, res) => {
 
   try {
     await connect(process.env.MONGO_URI);
+    await Product.syncIndexes();
+
     const checkExisting = await Product.exists({ ProductName });
 
     if (checkExisting) {
@@ -93,7 +93,7 @@ const createProduct = async (req, res) => {
       });
     }
 
-    await Product.create({ ProductName, ProductImage, brand, category });
+    await Product.create({ ProductName, ProductImage, brand, category, price });
     const allProducts = await Product.find();
 
     res.json({
@@ -107,13 +107,13 @@ const createProduct = async (req, res) => {
   }
 };
 
-
 const deleteProduct = async (req, res) => {
-  const { id } = req.body;
+  const { _id } = req.params;
+  
 
   try {
     await connect(process.env.MONGO_URI);
-    await Product.deleteOne({ id });
+    await Product.deleteOne({ _id });
     const Product = await Product.find();
     res.status(200).json({
       message: "Deleted Successfully",
@@ -127,18 +127,20 @@ const deleteProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const { id, ProductName, ProductImage, brand, category } = req.body;
+  const { _id, ProductName, ProductImage, brand, category, price } = req.body;
 
-  const filter = { id };
-  const update = { ProductName, ProductImage, brand, category };
+  const filter = { _id };
+  const update = { ProductName, ProductImage, brand, category, price };
 
   try {
     await connect(process.env.MONGO_URI);
+    await Product.syncIndexes();
+
     await Product.findOneAndUpdate(filter, update, {
       new: true,
     });
 
-    const updatedProducts = await Product.find();  // renamed the variable to avoid conflict
+    const updatedProducts = await Product.find(); // renamed the variable to avoid conflict
 
     res.json({
       message: "Successfully updated",
@@ -159,4 +161,5 @@ module.exports = {
   getProductsByCategory,
   createProduct,
   updateProduct,
-  deleteProduct,};
+  deleteProduct,
+};

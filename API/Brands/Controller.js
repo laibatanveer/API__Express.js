@@ -20,7 +20,7 @@ const getBrandById = async (req, res) => {
   const { _id } = req.query;
 
   try {
-    await connect(process.env.MONGO_URL);
+    await connect(process.env.MONGO_URI);
     const Brand = await Brand.findOne({ _id });
     res.json({ Brand });
   } catch (error) {
@@ -34,7 +34,7 @@ const getBrandByName = async (req, res) => {
   const { BrandName } = req.params;
 
   try {
-    await mongoose.connect(process.env.MONGO_URL);
+    await mongoose.connect(process.env.MONGO_URI);
     const Brand = await Brand.findOne({ BrandName });
     res.json({ Brand });
   } catch (error) {
@@ -55,6 +55,7 @@ const createBrand = async (req, res) => {
     try {
       await connect(process.env.MONGO_URI);
       const checkExisting = await Brand.exists({ BrandName });
+      await Brand.syncIndexes();
 
       if (checkExisting) {
         res.status(400).json({
@@ -81,7 +82,7 @@ const deleteBrand = async (req, res) => {
   const { _id } = req.body;
 
   try {
-    await connect(process.env.MONGO_URL);
+    await connect(process.env.MONGO_URI);
     await Brand.deleteOne({ _id });
     const Brand = await Brand.find();
     res.status(200).json({
@@ -102,7 +103,7 @@ const updateBrand = async (req, res) => {
   const update = { BrandName, BrandImage };
 
   try {
-    await connect(process.env.MONGO_URL);
+    await connect(process.env.MONGO_URI);
 
     await Brand.findOneAndUpdate(filter, update, {
       new: true,
