@@ -23,10 +23,10 @@ mongoose
 
 app.use(express.json());
 app.use(cors());
-app.use("/registration", registrationRouter);
-app.use("/products", productRouter);
-app.use("/category", categoryRouter);
-app.use("/brands", brandsRouter);
+app.use("/api/registration", registrationRouter);
+app.use("/api/products", productRouter);
+app.use("/api/category", categoryRouter);
+app.use("/api/brands", brandsRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

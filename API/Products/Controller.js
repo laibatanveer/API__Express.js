@@ -97,7 +97,7 @@ const createProduct = async (req, res) => {
     const allProducts = await Product.find();
 
     res.json({
-      message: "DB Connected",
+      message: "Product Added Successfully7",
       Product: allProducts,
     });
   } catch (error) {
@@ -114,10 +114,10 @@ const deleteProduct = async (req, res) => {
   try {
     await connect(process.env.MONGO_URI);
     await Product.deleteOne({ _id });
-    const Product = await Product.find();
+    const product = await Product.find();
     res.status(200).json({
       message: "Deleted Successfully",
-      Product,
+      product,
     });
   } catch (error) {
     res.status(400).json({

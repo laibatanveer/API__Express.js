@@ -40,7 +40,8 @@ const createCategory = async (req, res) => {
       });
     }
 
-    const newCategory = await Category.create({ CategoryName, CategoryImage });
+    await Category.create({ CategoryName, CategoryImage });
+    const newCategory = await Category.find();
     res.status(201).json({
       message: "Category created successfully.",
       category: newCategory,
@@ -81,7 +82,7 @@ const getCategoryByName = async (req, res) => {
   }
 };
 const deleteCategory = async (req, res) => {
-  const { _id } = req.body;
+  const { _id } = req.params;
 
   try {
     await connect(process.env.MONGO_URI);
