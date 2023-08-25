@@ -145,6 +145,7 @@ const deleteUser = async (req, res) => {
   try {
     await connect(process.env.MONGO_URI);
     await User.deleteOne({ _id });
+    const user = await User.find();
 
     res.json({ message: "User Deleted Successfully" });
   } catch (error) {

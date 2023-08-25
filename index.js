@@ -9,6 +9,7 @@ const productRouter = require("./API/Products/Router");
 const categoryRouter = require("./API/Category/Router");
 const brandsRouter = require("./API/Brands/Router");
 const orderRouter =require("./API/Order/router");
+const mailRouter = require("./API/Mailer/Router")
 
 require("dotenv").config();
 console.log(process.env.MONGO_URI);
@@ -28,7 +29,8 @@ app.use("/api/registration", registrationRouter);
 app.use("/api/products", productRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/brands", brandsRouter);
-app.use("/api/order", orderRouter)
+app.use("/api/order", orderRouter);
+app.use("/api/mail", mailRouter);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
