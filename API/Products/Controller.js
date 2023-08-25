@@ -20,6 +20,7 @@ const getProductById = async (req, res) => {
   const { _id } = req.params;
 
   try {
+    await connect(process.env.MONGO_URI);
     const foundProduct = await Product.findOne({ _id });
     if (!foundProduct) {
       return res.status(404).json({ message: "Product not found" });
@@ -31,6 +32,7 @@ const getProductById = async (req, res) => {
     });
   }
 };
+
 const getProductByName = async (req, res) => {
   const { ProductName } = req.params;
 
