@@ -43,7 +43,7 @@ const placeOrder = async (req, res) => {
       order,
       totalBill,
     });
-
+  
     await transporter.sendMail({
       from: "shahlaiba152@gmail.com",
       to: customerEmail,
@@ -63,17 +63,20 @@ const placeOrder = async (req, res) => {
               },
             ],
           },
-          outro: `Your Order will be delivered at ${customerAddress}, please ensure that your contact number ${customerContact}is active.`,
+          outro: `Your Order will be delivered at ${customerAddress}, please ensure that your contact number ${customerContact} is active.`,
         },
       }),
     });
-
+  
     res.json({
-      message: "Order Placed Successfully , Please Check your MailBox",
+      success: true,
+      message: "Order Placed Successfully. Please Check your MailBox",
+      orderId: orders._id
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
+  
 };
 
 const allOrders = async (req, res) => {
