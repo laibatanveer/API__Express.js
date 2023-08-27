@@ -2,9 +2,9 @@ const app = require('express')
 const router = app.Router()
 const { placeOrder, allOrders, trackOrder } = require('./controller')
 
-router.post('/place-order', placeOrder)
-router.get('/get-all-orders', allOrders)
-router.get('/track-order/:_id', trackOrder)
+router.post('/placeOrder', placeOrder)
+router.get('/getAllOrders', allOrders)
+router.get('/trackOrder/:_id', trackOrder)
 
 
 module.exports = router

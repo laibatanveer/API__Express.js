@@ -4,13 +4,13 @@ const Orders = require('./model');
 const { connect } = require("mongoose");
 
 const placeOrder = async (req, res) => {
-    const { customerName, customerEmail, customerId, customerContact, customerAddress, order } = req.body
+    const { customerName, customerEmail, customerId, customerContact, customerAddress, totalBill, order} = req.body
 
     const config = {
         service: 'gmail',
         auth: {
-            user: 'shumaimaf@gmail.com',
-            pass: 'ckscdibekqfmwbor'
+            user: 'shahlaiba152@gmail.com',
+            pass: 'bykvicymdxvwfzwf'
         }
     }
 
@@ -28,16 +28,16 @@ const placeOrder = async (req, res) => {
 
     try {
         await connect(process.env.MONGO_URI)
-        const orders = await Orders.create({ customerName, customerEmail, customerId, customerContact, customerAddress, order })
+        const orders = await Orders.create({ customerName, customerEmail, customerId, customerContact, customerAddress, order, totalBill })
 
         await transporter.sendMail({
-            from: "shumaimaf@gmail.com",
+            from: "shahlaiba152@gmail.com",
             to: customerEmail,
             subject: "Place Order",
             html: mailGenerator.generate({
                 body: {
                     name: customerName,
-                    intro: 'Welcome to Banoqabil! We\'re very excited to have you on board.',
+                    intro: 'Welcome to Beautify! We\'re very excited to have you on board.',
                     table: {
                         data: [
                             {
@@ -49,7 +49,7 @@ const placeOrder = async (req, res) => {
                             }
                         ]
                     },
-                    outro: `Your Order will be delivered at ${customerAddress}, please ensure that your contact number ${customerContact}is active`
+                    outro: `Your Order will be delivered at ${customerAddress}, please ensure that your contact number ${customerContact}is active.`
                 }
             })
         })

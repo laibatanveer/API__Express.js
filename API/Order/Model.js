@@ -26,6 +26,12 @@ const OrdersSchema = new Schema({
         type: Array,
         required: true,
     },
+    totalBill: { 
+        type: Number,
+        required: true,
+    },
+
+
     order_at: {
         type: Date,
         default: Date.now
