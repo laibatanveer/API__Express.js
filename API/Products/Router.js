@@ -14,7 +14,7 @@ router.get("/product/:_id", controller.getProductById);
 
 router.get("/name/:ProductName", controller.getProductByName);
 
-router.put("/updateProduct", controller.updateProduct);
+router.put("/updateProduct/:_id", controller.updateProduct);
 
 router.delete("/deleteProduct/:_id", controller.deleteProduct);
 

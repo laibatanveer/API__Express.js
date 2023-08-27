@@ -21,8 +21,9 @@ const getBrandById = async (req, res) => {
 
   try {
     await connect(process.env.MONGO_URI);
-    const Brand = await Brand.findOne({ _id });
-    res.json({ Brand });
+    const foundBrand = await Brand.findOne({ _id });
+
+    res.json({ foundBrand });
   } catch (error) {
     res.status(400).json({
       message: error.message,
@@ -35,8 +36,8 @@ const getBrandByName = async (req, res) => {
 
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    const Brand = await Brand.findOne({ BrandName });
-    res.json({ Brand });
+    const Brand1 = await Brand.findOne({ BrandName });
+    res.json({ Brand1 });
   } catch (error) {
     res.json({
       message: error.message,
@@ -79,15 +80,15 @@ const createBrand = async (req, res) => {
 };
 
 const deleteBrand = async (req, res) => {
-  const { _id } = req.body;
+  const { _id } = req.params;
 
   try {
     await connect(process.env.MONGO_URI);
     await Brand.deleteOne({ _id });
-    const Brand = await Brand.find();
+    const Brand1 = await Brand.find();
     res.status(200).json({
       message: "Deleted Successfully",
-      Brand,
+      Brand1,
     });
   } catch (error) {
     res.status(400).json({
@@ -97,7 +98,8 @@ const deleteBrand = async (req, res) => {
 };
 
 const updateBrand = async (req, res) => {
-  const { _id, BrandName, BrandImage } = req.body;
+  const { BrandName, BrandImage } = req.body;
+  const { _id } = req.params;
 
   const filter = { _id };
   const update = { BrandName, BrandImage };
@@ -105,15 +107,13 @@ const updateBrand = async (req, res) => {
   try {
     await connect(process.env.MONGO_URI);
 
-    await Brand.findOneAndUpdate(filter, update, {
-      new: true,
-    });
+    await Brand.findOneAndUpdate(filter, update);
 
-    const Brand = await Brand.find();
+    const updatedBrand = await Brand.find();
 
     res.json({
       message: "Successfully updated",
-      category,
+      updatedBrand,
     });
   } catch (error) {
     res.status(400).json({

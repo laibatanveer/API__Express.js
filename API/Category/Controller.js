@@ -101,7 +101,8 @@ const deleteCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
-  const { _id, CategoryName, CategoryImage } = req.body;
+  const { CategoryName, CategoryImage } = req.body;
+  const { _id } = req.params;
 
   const filter = { _id };
   const update = { CategoryName, CategoryImage };

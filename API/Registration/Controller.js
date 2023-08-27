@@ -51,10 +51,8 @@ const Login = async (req, res) => {
       return res.status(404).json({ message: "User Doesn't Exist" });
     }
 
-    // Password comparison.
     const isValidPassword = await compare(password, CheckUser.password);
 
-    // Log for debugging purposes.
     console.log("Password check:", isValidPassword);
 
     if (isValidPassword) {
@@ -64,6 +62,7 @@ const Login = async (req, res) => {
         role: CheckUser.role,
         ProfilePic: CheckUser.ProfilePic,
         Joining: CheckUser.Joining,
+        username: CheckUser.username,
       };
 
       if (!process.env.JWT_SECRET) {
@@ -78,8 +77,6 @@ const Login = async (req, res) => {
 
       return res.json({ message: "Successfully Logged in", token });
     } else {
-      // console.log("User entered password:", password);
-      // console.log("Stored hashed password:", CheckUser.password);
       return res.status(403).json({ message: "Invalid Credentials" });
     }
   } catch (error) {

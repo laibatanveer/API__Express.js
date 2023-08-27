@@ -22,7 +22,7 @@ const getProductById = async (req, res) => {
   try {
     await connect(process.env.MONGO_URI);
     const foundProduct = await Product.findOne({ _id });
-   
+
     res.json({ foundProduct });
   } catch (error) {
     res.status(400).json({
@@ -109,7 +109,6 @@ const createProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const { _id } = req.params;
-  
 
   try {
     await connect(process.env.MONGO_URI);
@@ -127,7 +126,8 @@ const deleteProduct = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-  const { _id, ProductName, ProductImage, brand, category, price } = req.body;
+  const { ProductName, ProductImage, brand, category, price } = req.body;
+  const { _id } = req.params;
 
   const filter = { _id };
   const update = { ProductName, ProductImage, brand, category, price };
@@ -140,7 +140,7 @@ const updateProduct = async (req, res) => {
       new: true,
     });
 
-    const updatedProducts = await Product.find(); // renamed the variable to avoid conflict
+    const updatedProducts = await Product.find();
 
     res.json({
       message: "Successfully updated",
